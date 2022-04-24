@@ -1,0 +1,64 @@
+long counter = 0;
+long val = 0;
+int sensor1;
+int sensor2;
+int valvepin = 2;
+unsigned long aberto = 120000;
+unsigned long proxleitura = 43200000;
+
+void setup() 
+{
+  Serial.begin(9600);
+  pinMode(valvepin, OUTPUT);
+  digitalWrite(valvepin, HIGH);
+}
+
+
+void loop() 
+{
+
+sensor1 = analogRead(0);
+sensor2 = analogRead(1);
+
+val = val + sensor1 + sensor2;
+counter++;
+
+Serial.print("Esse e o primeiro sensor: ");
+Serial.println(sensor1);
+Serial.print("Esse e o segundo sensor: ");
+Serial.println(sensor2);
+
+Serial.print("Essa e a soma dos valores: ");
+Serial.println(val);
+Serial.print("Esse e o contador: ");
+Serial.println(counter);
+
+if(counter == 100)
+{
+  long media = val/(counter * 2);
+  
+  Serial.print("Essa eh a media: ");
+  Serial.println(media);
+  
+  //teste logico, se media das leituras for maior ou igual a 600
+  if(media >= 600)
+  {
+    //Abre a valvula pelo valor "aberto"
+    digitalWrite(valvepin, LOW);
+    delay(aberto);
+    //Fecha a valvula pela subitracao dos valores
+    digitalWrite(valvepin, HIGH);
+    delay((proxleitura - aberto));
+  }
+
+  if(media < 600)
+  {
+    delay(proxleitura);
+  }
+  
+  val = 0;
+  counter = 0;
+}
+
+delay(1000);
+}
